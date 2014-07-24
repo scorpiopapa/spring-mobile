@@ -1,0 +1,60 @@
+<style>
+form {
+	margin: 0;
+}
+textarea {
+	display: block;
+}
+</style>
+<link rel="stylesheet" href="../resources/kindeditor/themes/default/default.css" />
+<script charset="utf-8" src="../resources/kindeditor/kindeditor-min.js"></script>
+<script charset="utf-8" src="../resources/kindeditor/lang/zh_CN.js"></script>
+<script>
+var editor;
+$(function() {
+	editor = KindEditor.create('textarea[name="content"]', {
+		resizeType : 2,
+		//allowPreviewEmoticons : false,
+		//allowImageUpload : false,
+		items : [
+			'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold', 'italic', 'underline',
+			'removeformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist',
+			'insertunorderedlist']
+	});
+});
+
+function doPush(){
+	console.log(editor.text());
+	console.log(editor.html());
+	
+	var form = new Object();
+	form.message = editor.text();
+	form.html = editor.html();
+	
+	$.ajax({
+		type : "post",
+		url : appName + 'push.json',
+		data : form,
+		success : function(data) {
+			if(data.code == 0){
+				showInformationMessage('发送成功')
+			}else{
+				showErrorMessage('发送失败');
+			}
+		},
+		error: function(){
+			showErrorMessage('发送失败');
+		}
+	});
+
+}
+
+function doClearKindEditor(){
+	editor.html('');
+}
+</script>
+<form>
+	<textarea name="content" style="width:1050px;height:600px;visibility:hidden;" placeholder="最多5000字"></textarea><br/>
+	<input type="button" value="发送" onclick="doPush()">
+	<input type="button" value="清空" onclick="doClearKindEditor()">
+</form>
